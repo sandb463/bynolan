@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nolan Sandbo - Home</title>
+    <style>
+        :root {
+            --shadow: #4E4545;      /* Dark charcoal */
+            --mustang: #807D7D;     /* Warm gray */
+            --caviar: #010101;      /* Deep black */
+            --saddle: #5C5851;      /* Warm brown */
+            --rein: #312E2E;        /* Medium gray */
+            --light-bg: #d2cfcf;    /* Light background */
+            --card-bg: #e2e0e0;     /* Card background */
+            --hover-color: var(--mustang);
+            --accent-color: #040001;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--caviar);
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: var(--shadow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 1.2rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--light-bg);
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--mustang);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--hover-color);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        main {
+            margin-top: 100px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(78, 69, 69, 0.1);
+            margin-bottom: 3rem;
+            border: 1px solid var(--mustang);
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .profile-photo {
+            flex-shrink: 0;
+        }
+
+        .profile-text {
+            text-align: center;
+        }
+
+        .main-profile-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 4px solid var(--secondary-color);
+        }
+
+        .video-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: 1.5rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            
+        }
+
+        .welcome-video {
+            width: 100%;
+            display: block;
+        }
+
+        .hobbies-section {
+            margin: 3rem 0;
+        }
+
+        .hobby-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hobby-card {
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Center items vertically */
+            background-color: #e2e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            flex: 1; /* Allow text boxes to take more space */
+            padding: 1rem; /* Add padding for better spacing */
+        }
+
+        .hobby-photo {
+            width: 50%; /* Set width to 50% of the card */
+            height: 500px;
+            display: flex; /* center image inside the box */
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        
+        
+
+        .hobby-content {
+            flex: 1; /* Allow content to take remaining space */
+            padding: 1rem; /* Add padding for content */
+        }
+
+        .hobby-content h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .overview-section {
+            margin: 3rem 0;
+        }
+
+        .overview-section .info-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+        }
+
+        .professional-intro {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .profile-text {
+                text-align: center;
+            }
+
+            .hobby-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-profile-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        .hero-section h1 {
+            font-size: 2.8rem;
+            color: var(--shadow);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            color: var(--saddle);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .content-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50vw;
+            right: -50vw;
+            bottom: 0;
+            background: linear-gradient(145deg, var(--mustang) 0%, var(--shadow) 100%);
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        .info-card {
+            background: linear-gradient(145deg, var(--card-bg), var(--light-bg));
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(78, 69, 69, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--mustang);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--shadow);
+            box-shadow: 0 6px 20px rgba(78, 69, 69, 0.15);
+        }
+
+        .info-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, transparent, var(--mustang));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .info-card:hover::after {
+            opacity: 0.05;
+        }
+
+        .info-card h2 {
+            color: var(--shadow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .info-card p {
+            color: var(--saddle);
+            position: relative;
+            z-index: 2;
+        }
+
+        footer {
+            background-color: var(--shadow);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            box-shadow: 0 -2px 10px rgba(78, 69, 69, 0.2);
+        }
+
+        footer p {
+            text-align: center;
+            color: var(--light-bg);
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            nav {
+                position: relative;
+            }
+
+            main {
+                margin-top: 2rem;
+            }
+
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .hobby-photo img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gym-zoom {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* removed duplicate .featured-interests img rule; using .featured-img instead */
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="hobbies.html">Hobbies</a></li>
+            <li><a href="discover.html">Discover UMD</a></li>
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="career.html">Career</a></li>
+            <li><a href="game.html">Game</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section with Professional Photo -->
+        <section class="hero-section">
+            <div class="profile-container">
+                <div class="profile-photo">
+                    <!-- Replace src with your actual professional headshot -->
+                    <img src="images/headshot.jpg" alt="Headshot" style="width: auto; height: 500px; border: 1px solid;" />
+                </div>
+                <div class="profile-text">
+                    <h1>Welcome to My Portfolio</h1>
+                    <p class="professional-intro">I'm Nolan Sandbo, a dedicated student at the University of Minnesota Dultuh, currently in my sophmore year studying Entrepreneurship.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Welcome Video Section -->
+        <section class="video-section">
+            <h2>Welcome Message</h2>
+            <div class="video-container">
+                <!-- Replace src with your actual video file -->
+                <video controls class="welcome-video">
+                    <source src="videos/welcome-message.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+        <!-- Hobbies Section -->
+        <section class="hobbies-section">
+            <h2>Featured Interests</h2>
+            <div class="hobby-grid">
+                <div class="hobby-card">
+                    <div class="hobby-photo">
+                        <!-- Replace src with your first hobby photo -->
+                        <img src="images/huntingpic.jpg" alt="Hobby 1" class="featured-img" style="border: 1px solid;" />
+                    </div>
+                    <div class="hobby-content">
+                        <h3>Hunting</h3>
+                        <p>Share your passion for this hobby and how it contributes to your personal growth and creativity.</p>
+                    </div>
+                </div>
+                <div class="hobby-card">
+                    <div class="hobby-photo">
+                        <!-- Replace src with your second hobby photo -->
+                        <img src="images/gym2.jpg" alt="Hobby 2" class="featured-img gym-zoom" style="border: 1px solid;" />
+                    </div>
+                    <div class="hobby-content">
+                        <h3>Fitness</h3>
+                        <p>Describe another interest that showcases your diverse personality and interests outside of academics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Professional Overview Section -->
+        <section class="overview-section">
+            <div class="info-card">
+                <h2>Professional Overview</h2>
+                <p>At the University of Minnesota Duluth, I'm pursuing Entrepreneurship with a focus on leadership and problem solving.</p>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Nolan Sandbo. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
