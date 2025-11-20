@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College 2048 - Supply Challenge</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .game-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid var(--mustang);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-subtitle {
+            font-size: 1.1em;
+            color: #666;
+            margin: 5px 0 20px 0;
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .music-btn {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .music-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.4);
+        }
+
+        .music-btn.active {
+            background: linear-gradient(45deg, #43e97b, #38f9d7);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4facfe;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .music-icon {
+            font-size: 1.1em;
+        }
+
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .score-box {
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            min-width: 120px;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .new-game-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .new-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 90, 36, 0.4);
+        }
+
+        .game-board {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background: #bbada0;
+            border-radius: 15px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell {
+            background: rgba(238, 228, 218, 0.35);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 80px;
+        }
+
+        .tile {
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            width: 100%;
+            height: 100%;
+            animation: tile-appear 0.2s ease-out;
+        }
+
+        .tile-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            padding: 5px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tile-icon {
+            font-size: 2em;
+            margin-bottom: 2px;
+        }
+
+        .tile-number {
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .tile-2 { background: #eee4da; color: #776e65; }
+        .tile-4 { background: #ede0c8; color: #776e65; }
+        .tile-8 { background: #f2b179; color: white; }
+        .tile-16 { background: #f59563; color: white; }
+        .tile-32 { background: #f67c5f; color: white; }
+        .tile-64 { background: #f65e3b; color: white; }
+        .tile-128 { background: #edcf72; color: white; }
+        .tile-256 { background: #edcc61; color: white; }
+        .tile-512 { background: #edc850; color: white; }
+        .tile-1024 { background: #edc53f; color: white; }
+        .tile-2048 { background: #edc22e; color: white; }
+
+        .tile-super { 
+            background: linear-gradient(45deg, #3c3a32, #1a1a1a); 
+            color: white;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .tile-merged {
+            animation: tile-merge 0.3s ease-out;
+        }
+
+        .tile-new {
+            animation: tile-appear 0.3s ease-out;
+        }
+
+        @keyframes tile-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes tile-merge {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .controls {
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            z-index: 100;
+        }
+
+        .game-over.show {
+            display: flex;
+        }
+
+        .game-over h2 {
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+        }
+
+        .game-over p {
+            font-size: 1.2em;
+            margin: 0 0 30px 0;
+        }
+
+        .game-over button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-over button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 500px) {
+            .game-wrapper {
+                padding: 1rem;
+            }
+            
+            .game-container {
+                padding: 20px;
+            }
+            
+            .game-board {
+                width: 320px;
+                height: 320px;
+            }
+            
+            .game-title {
+                font-size: 2em;
+            }
+            
+            .tile {
+                font-size: 1.4em;
+            }
+            
+            .tile-icon {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="hobbies.html">Hobbies</a></li>
+            <li><a href="discover.html">Discover UMD</a></li>
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="career.html">Career</a></li>
+            <li><a href="game.html">Game</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="game-wrapper">
+            <div class="game-container">
+            <div class="game-header">
+                <h1 class="game-title">College 2048</h1>
+                <p class="game-subtitle">Combine supplies to reach the University!</p>
+            </div>
+
+            <div class="music-controls">
+                <button class="music-btn" id="musicToggle" onclick="toggleMusic()">
+                    <span class="music-icon" id="musicIcon">🔇</span>
+                    <span id="musicText">Music Off</span>
+                </button>
+                <div class="volume-container">
+                    <span class="music-icon">🔊</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" onchange="changeVolume(this.value)">
+                </div>
+                <button class="music-btn" id="muteToggle" onclick="toggleMute()">
+                    <span class="music-icon" id="muteIcon">🔇</span>
+                </button>
+            </div>
+
+        <div class="score-container">
+            <div class="score-box">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">Best</div>
+                <div class="score-value" id="best">0</div>
+            </div>
+        </div>
+
+        <button class="new-game-btn" onclick="startNewGame()">New Game</button>
+
+        <div class="game-board">
+            <div class="grid" id="grid">
+                <!-- Cells will be generated by JavaScript -->
+            </div>
+            <div class="game-over" id="gameOver">
+                <h2>Game Over!</h2>
+                <p>No more moves available</p>
+                <button onclick="startNewGame()">Play Again</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <p><strong>Controls:</strong> Use arrow keys or swipe to move tiles</p>
+        </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Nolan Sandbo. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // College supply icons
+        const supplyIcons = {
+            2: { icon: '✏️', name: 'Pencil', cost: '$0.50' },
+            4: { icon: '✒️', name: 'Ballpoint Pen', cost: '$1.00' },
+            8: { icon: '📒', name: 'Spiral Notebook', cost: '$3.00' },
+            16: { icon: '📓', name: 'College Ruled Notebook', cost: '$5.00' },
+            32: { icon: '📚', name: 'Textbooks', cost: '$50.00' },
+            64: { icon: '💻', name: 'Laptop', cost: '$800.00' },
+            128: { icon: '🎒', name: 'Backpack', cost: '$80.00' },
+            256: { icon: '📱', name: 'Smartphone', cost: '$600.00' },
+            512: { icon: '🎓', name: 'College Degree', cost: '$40,000.00' },
+            1024: { icon: '👨‍🏫', name: 'Professor', cost: '$80,000.00' },
+            2048: { icon: '🏫', name: 'University Building', cost: '$2,000,000.00' },
+            4096: { icon: '🎓', name: 'Master Degree', cost: '$80,000.00' },
+            8192: { icon: '🏛️', name: 'Campus Expansion', cost: '$5,000,000.00' },
+            16384: { icon: '🎓', name: 'PhD Program', cost: '$150,000.00' }
+        };
+
+        function getTileInfo(value) {
+            if (supplyIcons[value]) {
+                return supplyIcons[value];
+            }
+            
+            if (value > 16384) {
+                return { icon: '👑', name: 'Education Empire', cost: '$100,000,000.00' };
+            }
+            
+            let closest = 2;
+            for (let key in supplyIcons) {
+                const numKey = parseInt(key);
+                if (numKey <= value && numKey > closest) {
+                    closest = numKey;
+                }
+            }
+            
+            return supplyIcons[closest] || { icon: '📚', name: 'Education', cost: 'Priceless' };
+        }
+
+        // Music system variables
+        let musicEnabled = false;
+        let isMuted = false;
+        let currentVolume = 0.5;
+        
+        // Audio system
+        let audioContext;
+        let masterGain;
+        let bassGain;
+        let melodyGain;
+        let drumGain;
+        let musicInterval;
+        let currentBeat = 0;
+        
+        // Music patterns for the EDM beat
+        const bassPattern = [65.41, 82.41, 73.42, 87.31, 65.41, 82.41, 73.42, 98.00];
+        const melodyPattern = [392.00, 440.00, 493.88, 523.25, 440.00, 392.00, 523.25, 440.00];
+        const leadPattern = [523.25, 659.25, 587.33, 698.46, 659.25, 587.33, 523.25, 493.88];
+        
+        // Initialize music system
+        function initMusic() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioContext.createGain();
+                bassGain = audioContext.createGain();
+                melodyGain = audioContext.createGain();
+                drumGain = audioContext.createGain();
+                
+                bassGain.connect(masterGain);
+                melodyGain.connect(masterGain);
+                drumGain.connect(masterGain);
+                masterGain.connect(audioContext.destination);
+                
+                masterGain.gain.setValueAtTime(currentVolume, audioContext.currentTime);
+                bassGain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                melodyGain.gain.setValueAtTime(0.4, audioContext.currentTime);
+                drumGain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                
+                // Load saved settings
+                const savedMusic = localStorage.getItem('college2048-music-enabled');
+                const savedVolume = localStorage.getItem('college2048-volume');
+                const savedMute = localStorage.getItem('college2048-muted');
+                
+                if (savedMusic !== null) {
+                    musicEnabled = savedMusic === 'true';
+                }
+                if (savedVolume !== null) {
+                    currentVolume = parseFloat(savedVolume);
+                    document.getElementById('volumeSlider').value = currentVolume * 100;
+                }
+                if (savedMute !== null) {
+                    isMuted = savedMute === 'true';
+                }
+                
+                updateMusicUI();
+                
+            } catch (error) {
+                console.warn('Web Audio API not supported:', error);
+                // Hide music controls if audio not supported
+                document.querySelector('.music-controls').style.display = 'none';
+            }
+        }
+        
+        // Create drum beat
+        function createDrumSound(type, startTime) {
+            if (!audioContext) return;
+            
+            if (type === 'kick') {
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+                
+                oscillator.connect(filter);
+                filter.connect(gain);
+                gain.connect(drumGain);
+                
+                oscillator.frequency.setValueAtTime(60, startTime);
+                oscillator.frequency.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                filter.frequency.setValueAtTime(100, startTime);
+                gain.gain.setValueAtTime(0.4, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                oscillator.type = 'sine';
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.3);
+            } else if (type === 'snare') {
+                const noise = audioContext.createBufferSource();
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.2, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < output.length; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                noise.buffer = buffer;
+                
+                const noiseGain = audioContext.createGain();
+                noise.connect(noiseGain);
+                noiseGain.connect(drumGain);
+                
+                noiseGain.gain.setValueAtTime(0.3, startTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+                noise.start(startTime);
+                noise.stop(startTime + 0.1);
+            }
+        }
+        
+        // Create bass line
+        function createBassNote(frequency, startTime, duration) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+            
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(bassGain);
+            
+            oscillator.frequency.setValueAtTime(frequency, startTime);
+            oscillator.type = 'sawtooth';
+            filter.frequency.setValueAtTime(100, startTime);
+            filter.type = 'lowpass';
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.3, startTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        }
+        
+        // Create melody note
+        function createMelodyNote(frequency, startTime, duration) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+            
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(melodyGain);
+            
+            oscillator.frequency.setValueAtTime(frequency, startTime);
+            oscillator.type = 'square';
+            filter.frequency.setValueAtTime(2000, startTime);
+            filter.type = 'lowpass';
+            filter.Q.setValueAtTime(5, startTime);
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.4, startTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        }
+        
+        // Create lead synth
+        function createLeadNote(frequency, startTime, duration) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+            
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(melodyGain);
+            
+            oscillator.frequency.setValueAtTime(frequency, startTime);
+            oscillator.type = 'triangle';
+            filter.frequency.setValueAtTime(3000, startTime);
+            filter.type = 'lowpass';
+            filter.Q.setValueAtTime(3, startTime);
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.25, startTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        }
+        
+        // Generate EDM beat
+        function generateEDMBeat() {
+            if (!audioContext || !musicEnabled) return;
+            
+            const now = audioContext.currentTime;
+            const beatDuration = 0.5; // 120 BPM
+            const step = 0.125; // 16th notes
+            
+            // Drum pattern
+            if (currentBeat % 4 === 0) {
+                createDrumSound('kick', now);
+            }
+            if (currentBeat % 8 === 4) {
+                createDrumSound('snare', now);
+            }
+            
+            // Bass line
+            if (currentBeat % 2 === 0) {
+                const bassNote = bassPattern[Math.floor((currentBeat / 2) % bassPattern.length)];
+                createBassNote(bassNote, now, beatDuration);
+            }
+            
+            // Melody
+            if (currentBeat % 4 === 2) {
+                const melodyNote = melodyPattern[Math.floor(currentBeat / 4) % melodyPattern.length];
+                createMelodyNote(melodyNote, now, beatDuration);
+            }
+            
+            // Lead - More frequent for catchy feel
+            if (currentBeat % 1 === 0) {
+                const leadNote = leadPattern[currentBeat % leadPattern.length];
+                createLeadNote(leadNote, now, beatDuration / 2);
+            }
+            
+            // Add hi-hat for more energy
+            if (currentBeat % 1 === 0) {
+                const hihat = audioContext.createOscillator();
+                const hihatGain = audioContext.createGain();
+                const hihatFilter = audioContext.createBiquadFilter();
+                
+                hihat.connect(hihatFilter);
+                hihatFilter.connect(hihatGain);
+                hihatGain.connect(drumGain);
+                
+                hihat.frequency.setValueAtTime(8000, now);
+                hihatGain.gain.setValueAtTime(0.1, now);
+                hihatGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                hihat.type = 'square';
+                
+                hihat.start(now);
+                hihat.stop(now + 0.05);
+            }
+            
+            currentBeat = (currentBeat + 1) % 16; // 16-step pattern
+        }
+        
+        // Start background music
+        function startBackgroundMusic() {
+            if (!audioContext || musicEnabled) return;
+            
+            musicEnabled = true;
+            currentBeat = 0;
+            musicInterval = setInterval(generateEDMBeat, 125); // Fast 16th note pattern
+            localStorage.setItem('college2048-music-enabled', 'true');
+            updateMusicUI();
+        }
+        
+        // Stop background music
+        function stopBackgroundMusic() {
+            if (!musicEnabled) return;
+            
+            musicEnabled = false;
+            if (musicInterval) {
+                clearInterval(musicInterval);
+                musicInterval = null;
+            }
+            localStorage.setItem('college2048-music-enabled', 'false');
+            updateMusicUI();
+        }
+        
+        // Toggle music on/off
+        function toggleMusic() {
+            if (!audioContext) return;
+            
+            if (musicEnabled) {
+                stopBackgroundMusic();
+            } else {
+                // Resume audio context if suspended
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        startBackgroundMusic();
+                    });
+                } else {
+                    startBackgroundMusic();
+                }
+            }
+        }
+        
+        // Change volume
+        function changeVolume(volumePercent) {
+            if (!audioContext) return;
+            
+            currentVolume = volumePercent / 100;
+            masterGain.gain.setValueAtTime(currentVolume, audioContext.currentTime);
+            localStorage.setItem('college2048-volume', currentVolume);
+            
+            if (currentVolume > 0 && isMuted) {
+                isMuted = false;
+                updateMusicUI();
+            }
+        }
+        
+        // Toggle mute
+        function toggleMute() {
+            if (!audioContext) return;
+            
+            isMuted = !isMuted;
+            if (isMuted) {
+                masterGain.gain.setValueAtTime(0, audioContext.currentTime);
+            } else {
+                masterGain.gain.setValueAtTime(currentVolume, audioContext.currentTime);
+            }
+            localStorage.setItem('college2048-muted', isMuted);
+            updateMusicUI();
+        }
+        
+        // Update music UI
+        function updateMusicUI() {
+            const musicToggle = document.getElementById('musicToggle');
+            const musicIcon = document.getElementById('musicIcon');
+            const musicText = document.getElementById('musicText');
+            const muteIcon = document.getElementById('muteIcon');
+            
+            if (musicEnabled) {
+                musicToggle.classList.add('active');
+                musicIcon.textContent = '🎵';
+                musicText.textContent = 'EDM ON!';
+            } else {
+                musicToggle.classList.remove('active');
+                musicIcon.textContent = '🔇';
+                musicText.textContent = 'Music Off';
+            }
+            
+            muteIcon.textContent = isMuted ? '🔇' : '🔊';
+        }
+        
+        // Add sound effects for game events
+        function playSoundEffect(type) {
+            if (!audioContext || !musicEnabled || isMuted) return;
+            
+            const now = audioContext.currentTime;
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            oscillator.connect(gain);
+            gain.connect(masterGain);
+            
+            switch(type) {
+                case 'move':
+                    // Electronic pop sound
+                    oscillator.frequency.setValueAtTime(800, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    oscillator.type = 'square';
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.1);
+                    break;
+                    
+                case 'merge':
+                    // Epic rising synth
+                    const osc1 = audioContext.createOscillator();
+                    const osc2 = audioContext.createOscillator();
+                    const mergeGain = audioContext.createGain();
+                    
+                    osc1.connect(mergeGain);
+                    osc2.connect(mergeGain);
+                    mergeGain.connect(masterGain);
+                    
+                    osc1.frequency.setValueAtTime(523.25, now); // C5
+                    osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.3); // C6
+                    osc2.frequency.setValueAtTime(659.25, now); // E5
+                    osc2.frequency.exponentialRampToValueAtTime(1318.51, now + 0.3); // E6
+                    
+                    mergeGain.gain.setValueAtTime(0.2, now);
+                    mergeGain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    
+                    osc1.type = 'sawtooth';
+                    osc2.type = 'sawtooth';
+                    
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.3);
+                    osc2.stop(now + 0.3);
+                    break;
+                    
+                case 'gameOver':
+                    // Descending bass with delay
+                    const gameOsc = audioContext.createOscillator();
+                    const gameGain = audioContext.createGain();
+                    const delay = audioContext.createDelay();
+                    
+                    gameOsc.connect(gameGain);
+                    gameGain.connect(delay);
+                    delay.connect(masterGain);
+                    gameGain.connect(masterGain);
+                    
+                    gameOsc.frequency.setValueAtTime(400, now);
+                    gameOsc.frequency.exponentialRampToValueAtTime(100, now + 1);
+                    gameGain.gain.setValueAtTime(0.3, now);
+                    gameGain.gain.exponentialRampToValueAtTime(0.01, now + 1);
+                    delay.delayTime.setValueAtTime(0.3, now);
+                    
+                    gameOsc.type = 'sawtooth';
+                    gameOsc.start(now);
+                    gameOsc.stop(now + 1);
+                    break;
+            }
+        }
+
+        // Game variables
+        let board = [];
+        let score = 0;
+        let bestScore = localStorage.getItem('college2048-best') || 0;
+        let gameOver = false;
+        let isProcessingMove = false;
+
+        // Initialize the game
+        function init() {
+            initMusic();
+            createGrid();
+            startNewGame();
+            setupControls();
+            updateBestScore();
+        }
+
+        // Create the grid structure
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                grid.appendChild(cell);
+            }
+        }
+
+        // Start a new game
+        function startNewGame() {
+            board = Array(4).fill().map(() => Array(4).fill(0));
+            score = 0;
+            gameOver = false;
+            isProcessingMove = false;
+            
+            document.getElementById('gameOver').classList.remove('show');
+            addRandomTile();
+            addRandomTile();
+            renderBoard();
+            updateScore();
+        }
+
+        // Add a random tile (2 or 4)
+        function addRandomTile() {
+            const emptyCells = [];
+            
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) {
+                        emptyCells.push({row: i, col: j});
+                    }
+                }
+            }
+            
+            if (emptyCells.length > 0) {
+                const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                board[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        // Render the board
+        function renderBoard() {
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.getElementById(`cell-${i * 4 + j}`);
+                    const value = board[i][j];
+                    
+                    cell.innerHTML = '';
+                    
+                    if (value === 0) {
+                        cell.className = 'cell';
+                    } else {
+                        const tileInfo = getTileInfo(value);
+                        const tile = document.createElement('div');
+                        tile.className = `tile tile-${value}`;
+                        
+                        const content = document.createElement('div');
+                        content.className = 'tile-content';
+                        
+                        const icon = document.createElement('div');
+                        icon.className = 'tile-icon';
+                        icon.textContent = tileInfo.icon;
+                        
+                        const number = document.createElement('div');
+                        number.className = 'tile-number';
+                        number.textContent = value;
+                        
+                        content.appendChild(icon);
+                        content.appendChild(number);
+                        tile.appendChild(content);
+                        cell.appendChild(tile);
+                        
+                        if (value > 2048) {
+                            tile.className += ' tile-super';
+                        }
+                    }
+                }
+            }
+        }
+
+        // Update score
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            
+            if (score > bestScore) {
+                bestScore = score;
+                localStorage.setItem('college2048-best', bestScore);
+                updateBestScore();
+            }
+        }
+
+        // Update best score display
+        function updateBestScore() {
+            document.getElementById('best').textContent = bestScore;
+        }
+
+        // Helper function: slide tiles and merge equals
+        function slideAndMerge(line) {
+            let filtered = line.filter(val => val !== 0);
+            let result = [];
+            let wasMerged = false;
+            
+            for (let i = 0; i < filtered.length; i++) {
+                if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
+                    let mergedValue = filtered[i] * 2;
+                    result.push(mergedValue);
+                    score += mergedValue;
+                    wasMerged = true;
+                    i++;
+                } else {
+                    result.push(filtered[i]);
+                }
+            }
+            
+            while (result.length < 4) {
+                result.push(0);
+            }
+            
+            // Play sound effect for merges
+            if (wasMerged) {
+                setTimeout(() => playSoundEffect('merge'), 100);
+            }
+            
+            return result;
+        }
+
+        // Move tiles in a direction
+        function move(direction) {
+            if (gameOver || isProcessingMove) return false;
+            
+            isProcessingMove = true;
+            const previousBoard = board.map(row => [...row]);
+            let moved = false;
+            
+            switch(direction) {
+                case 'left':
+                    for (let i = 0; i < 4; i++) {
+                        board[i] = slideAndMerge(board[i]);
+                    }
+                    break;
+                    
+                case 'right':
+                    for (let i = 0; i < 4; i++) {
+                        let reversed = board[i].slice().reverse();
+                        let merged = slideAndMerge(reversed);
+                        board[i] = merged.reverse();
+                    }
+                    break;
+                    
+                case 'up':
+                    for (let j = 0; j < 4; j++) {
+                        let column = [];
+                        for (let i = 0; i < 4; i++) {
+                            column.push(board[i][j]);
+                        }
+                        let merged = slideAndMerge(column);
+                        for (let i = 0; i < 4; i++) {
+                            board[i][j] = merged[i];
+                        }
+                    }
+                    break;
+                    
+                case 'down':
+                    for (let j = 0; j < 4; j++) {
+                        let column = [];
+                        for (let i = 3; i >= 0; i--) {
+                            column.push(board[i][j]);
+                        }
+                        let merged = slideAndMerge(column);
+                        for (let i = 3, k = 0; i >= 0; i--, k++) {
+                            board[i][j] = merged[k];
+                        }
+                    }
+                    break;
+            }
+            
+            // Check if board changed
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] !== previousBoard[i][j]) {
+                        moved = true;
+                        break;
+                    }
+                }
+                if (moved) break;
+            }
+            
+            if (moved) {
+                playSoundEffect('move');
+                addRandomTile();
+                renderBoard();
+                updateScore();
+                checkGameOver();
+            }
+            
+            setTimeout(() => {
+                isProcessingMove = false;
+            }, 150);
+            
+            return moved;
+        }
+
+        // Check if game is over
+        function checkGameOver() {
+            // Check for empty cells
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) return false;
+                }
+            }
+            
+            // Check for possible merges
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const current = board[i][j];
+                    if ((j < 3 && current === board[i][j + 1]) ||
+                        (i < 3 && current === board[i + 1][j])) {
+                        return false;
+                    }
+                }
+            }
+            
+            gameOver = true;
+            playSoundEffect('gameOver');
+            document.getElementById('gameOver').classList.add('show');
+            return true;
+        }
+
+        // Setup keyboard controls
+        function setupControls() {
+            document.addEventListener('keydown', (e) => {
+                if (gameOver || isProcessingMove) return;
+                
+                e.preventDefault();
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        move('left');
+                        break;
+                    case 'ArrowRight':
+                        move('right');
+                        break;
+                    case 'ArrowUp':
+                        move('up');
+                        break;
+                    case 'ArrowDown':
+                        move('down');
+                        break;
+                }
+            });
+
+            // Touch controls for mobile
+            let startX, startY;
+            
+            document.addEventListener('touchstart', (e) => {
+                if (gameOver || isProcessingMove) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                if (gameOver || isProcessingMove || !startX || !startY) return;
+                
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+                
+                if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) {
+                    startX = null;
+                    startY = null;
+                    return;
+                }
+                
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX > 30) {
+                        move('left');
+                    } else if (diffX < -30) {
+                        move('right');
+                    }
+                } else {
+                    if (diffY > 30) {
+                        move('up');
+                    } else if (diffY < -30) {
+                        move('down');
+                    }
+                }
+                
+                startX = null;
+                startY = null;
+            });
+        }
+
+        // Initialize the game when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
